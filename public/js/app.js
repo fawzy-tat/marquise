@@ -1771,11 +1771,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['products'],
   data: function data() {
     return {
       stripeToken: '',
-      stripeEmail: ''
+      stripeEmail: '',
+      product: 1
     };
   },
   mounted: function mounted() {
@@ -1791,7 +1798,8 @@ __webpack_require__.r(__webpack_exports__);
       token: function token(_token) {
         _this.stripeToken = _token.id;
         _this.stripeEmail = _token.email;
-        axios.post('/purchases', _this.$data).then(function (response) {
+        axios.post('/purchases', _this.$data) // stripeToken,StripeEmail, Selected ProductID
+        .then(function (response) {
           return alert('Complete! Thanks for your payment!');
         });
       }
@@ -1799,11 +1807,17 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     buy: function buy() {
+      var product = this.findProductById(this.product);
       this.stripe.open({
-        amount: 2500,
-        name: 'fawzytat',
-        description: 'Widget',
+        amount: product.price,
+        name: product.name,
+        description: product.description,
         zipCode: true
+      });
+    },
+    findProductById: function findProductById(id) {
+      return this.products.find(function (product) {
+        return product.id == id;
       });
     }
   }
@@ -36895,6 +36909,52 @@ var render = function() {
         }
       }
     }),
+    _vm._v(" "),
+    _c(
+      "select",
+      {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.product,
+            expression: "product"
+          }
+        ],
+        attrs: { name: "product" },
+        on: {
+          change: function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.product = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          }
+        }
+      },
+      _vm._l(_vm.products, function(product) {
+        return _c(
+          "option",
+          { key: product.id, domProps: { value: product.id } },
+          [
+            _vm._v(
+              "\n            " +
+                _vm._s(product.name) +
+                " — $ " +
+                _vm._s(product.price / 100) +
+                "\n        "
+            )
+          ]
+        )
+      }),
+      0
+    ),
     _vm._v(" "),
     _c(
       "button",
